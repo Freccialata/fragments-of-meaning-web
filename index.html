@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="it">
+	<head>
+		<title>Frammenti di senso</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<link type="text/css" rel="stylesheet" href="main.css">
+		<style>
+			body {
+				background-color: #212222;
+				color: #e0e0e0;
+			}
+
+			button {
+				font-family: Monospace;
+				font-size: 14px;
+				padding: 15px 20px;
+				border: none;
+				background-color: #3d4040;
+				color: aliceblue;
+				border-radius: 6px;
+			}
+			button:hover {
+				background-color: #525454;
+			}
+			button:active {
+				background-color: #2f3030;
+			}
+
+			.prova-btn {
+				font-size: small;
+				padding: 8px 10px;
+				text-transform: initial;
+			}
+
+			input[type=number] {
+				max-width: 40px;
+				border: 1px solid #a1a1a1;
+				border-radius: 4px;
+				font-size: 16px;
+				font-family: inherit;
+				font-size: small;
+				color: inherit;
+				outline: none;
+				text-align: center;
+				line-height: normal;
+				vertical-align: middle;
+				background-color: #525454;
+			}
+
+			input[type=number]:focus {
+				border-color: #007bff;
+				box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+			}
+
+			input[type=number]::-webkit-inner-spin-button, 
+			input[type=number]::-webkit-outer-spin-button {
+				-webkit-appearance: none;
+				margin: 0;
+			}
+
+			h1 {
+				margin-bottom: 0;
+			}
+
+			sub {
+				color: #828181;
+			}
+
+			section#intro {
+				text-align: center;
+				margin-top: 30vh;
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+				align-items: center;
+				gap: 20px;
+			}
+
+			section#installation {
+				display: none;
+			}
+
+			#info {
+				color: #212222;
+			}
+
+			footer {
+				position: absolute;
+				bottom: 0;
+				width: 100%;
+				/* padding: 10px 0; */
+				text-align: center;
+				z-index: 1;
+			}
+		</style>
+	</head>
+
+	<body>
+		<section id="intro">
+			<div>
+				<h1>Frammenti di senso</h1>
+				<sub>Un software vivente e l'interazione con il pensiero ossessivo e dissociativo</sub>
+			</div>
+
+			<p>Indossa le cuffie&#x1F3A7 per un'esperienza migliore</p>
+
+			<div>
+				<button id="tprova-btn" class="prova-btn">Tempi di prova</button>
+				<button id="tnormal-btn" class="prova-btn">Tempi normali</button>
+			</div>
+			<div>
+				<label style="display: block;" for="min">
+					Minimo
+					<input id="min" name="min" step=".05" min="0.01" max="2048" type="number"/>
+					minuti per traccia
+				</label>
+				<label style="display: block;" for="max">
+					Massimo
+					<input id="max" name="max" step=".05" min="0.01" max="2048" type="number"/>
+					minuti per traccia
+				</label>
+			</div>
+			<br/>
+			<button id="init-btn">Inizia</button>
+		</section>
+		<section id="installation">
+			<div id="container-3D"></div>
+	
+			<div id="info">
+				<a href="" onclick="location.reload()" style="color: inherit;">&#8962; Frammenti di senso &#8617;</a>
+			</div>
+		</section>
+
+		<footer>
+			<p>Creato da <a href="https://freccialata.github.io/" target="_blank">Gianluca Rubino</a><br/>
+			Tesi NABA Milano 2024/2025<br/>
+			Relatore: Prof. Vincenzo Estremo</p>
+		</footer>
+
+		<script type="importmap">
+			{
+				"imports": {
+					"three": "./modules/three/three.module.js",
+                    "three/addons/": "./modules/three/addons/"
+				}
+			}
+		</script>
+
+		<script src="main.js" type="module"></script>
+
+	</body>
+
+</html>

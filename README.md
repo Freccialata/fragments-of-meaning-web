@@ -4,4 +4,9 @@ Fragments of meaning (Frammenti di senso) is a sound artwork exploring ruminativ
 
 This web version simulates the physical installation by presenting three interactive elements, each representing a 'machine-brain' that alternates between emitting sound and becoming obscured, reflecting the dynamics of ruminative thought and self-perception.
 
-Go to [the experience](https://freccialata.github.io/frammenti-senso-web).
+Created by Gianluca Rubino  
+Supervised by Prof. Vincenzo Estremo  
+Master's Thesis in Creative Media Production, NABA Milan, A.Y. 2024/2025
+
+Go to [the experience](https://freccialata.github.io/fragments-of-meaning-web)  
+Read the [master's thesis](#)
