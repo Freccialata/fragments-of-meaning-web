@@ -1,17 +1,18 @@
 import { renderInstallation } from './installation.js';
 import { startChuck, g_durs } from './sound.js'
 
-const init_btn = document.querySelector("#init-btn");
+let load3d = true;
 
-init_btn.addEventListener("click", e => {
+document.querySelector("#init-btn").addEventListener("click", e => {
     const introSection = document.querySelector("#intro");
     const installSection = document.querySelector("#installation");
     const footer = document.querySelector("footer");
+    if (load3d) renderInstallation();
     startChuck();
-    renderInstallation();
     introSection.style = "display: none;"
     installSection.style = "display: initial;"
     footer.innerHTML = "";
+    footer.style = "display: none;";
 });
 
 // Track duration selection
@@ -25,15 +26,18 @@ document.querySelector("#tprova-btn").addEventListener("click", () => {
     g_max_dur_intput.value = g_durs.max = .3;
 });
 document.querySelector("#tnormal-btn").addEventListener("click", () => {
-    g_min_dur_intput.value = g_durs.min = 61;
-    g_max_dur_intput.value = g_durs.max = 70;
+    g_min_dur_intput.value = g_durs.min = 4;
+    g_max_dur_intput.value = g_durs.max = 5;
 });
 
 g_min_dur_intput.addEventListener("change", (v) => {
     g_durs.min = parseFloat(v.target.value);
-    
-})
+});
 
 g_max_dur_intput.addEventListener("change", (v) => {
     g_durs.max = parseFloat(v.target.value);
-})
+});
+
+document.getElementById("load3d").addEventListener("change", () => {
+    load3d = !load3d;
+});

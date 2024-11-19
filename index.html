@@ -1,144 +1,74 @@
 <!DOCTYPE html>
 <html lang="it">
-	<head>
-		<title>Frammenti di senso</title>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-		<link type="text/css" rel="stylesheet" href="main.css">
-		<style>
-			body {
-				background-color: #212222;
-				color: #e0e0e0;
-			}
 
-			button {
-				font-family: Monospace;
-				font-size: 14px;
-				padding: 15px 20px;
-				border: none;
-				background-color: #3d4040;
-				color: aliceblue;
-				border-radius: 6px;
-			}
-			button:hover {
-				background-color: #525454;
-			}
-			button:active {
-				background-color: #2f3030;
-			}
+<head>
+	<title>Frammenti di senso</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<link type="text/css" rel="stylesheet" href="main.css">
+</head>
 
-			.prova-btn {
-				font-size: small;
-				padding: 8px 10px;
-				text-transform: initial;
-			}
+<body>
+	<section id="intro">
+		<div>
+			<h1>Frammenti di senso</h1>
+			<sub>Un software vivente e l'interazione con il pensiero ossessivo e dissociativo</sub>
+		</div>
 
-			input[type=number] {
-				max-width: 40px;
-				border: 1px solid #a1a1a1;
-				border-radius: 4px;
-				font-size: 16px;
-				font-family: inherit;
-				font-size: small;
-				color: inherit;
-				outline: none;
-				text-align: center;
-				line-height: normal;
-				vertical-align: middle;
-				background-color: #525454;
-			}
+		<p>Indossa le cuffie&#x1F3A7 per un'esperienza migliore</p>
 
-			input[type=number]:focus {
-				border-color: #007bff;
-				box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-			}
+		<div>
+			<button id="tprova-btn" class="prova-btn">Tempi di prova</button>
+			<button id="tnormal-btn" class="prova-btn">Tempi normali</button>
+		</div>
+		<div>
+			<label style="display: block;" for="min">
+				Minimo
+				<input id="min" name="min" step=".05" min="0.01" max="2048" type="number" />
+				minuti per traccia
+			</label>
+			<label style="display: block;" for="max">
+				Massimo
+				<input id="max" name="max" step=".05" min="0.01" max="2048" type="number" />
+				minuti per traccia
+			</label>
+		</div>
+		<div>
+			<label class="vlign checkboxlabel" for="load3d">
+				<input type="checkbox" name="load3d" id="load3d" checked>
+				<span class="vlign inputcheckbox">
+					<svg width="10" height="14" viewBox="0 0 2.4580861 2.0784812" version="1.1" id="svg1"
+						xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+						<defs id="defs1" />
+						<g id="layer1" transform="translate(-1.4744518,-1.6036145)">
+							<path
+								d="M 3.520229,1.6036146 2.2646136,2.8568939 1.8873451,2.4796253 1.4744519,2.8925183 2.2646136,3.682096 3.932538,2.0170916 Z"
+								id="path1" style="fill:#efefef;fill-opacity:1;stroke-width:0.292003" />
+						</g>
+					</svg>
+				</span>
+				Carica 3D
+			</label>
+		</div>
+		<br />
+		<button id="init-btn">Inizia</button>
+	</section>
+	<section id="installation">
+		<div id="container-3D"></div>
 
-			input[type=number]::-webkit-inner-spin-button, 
-			input[type=number]::-webkit-outer-spin-button {
-				-webkit-appearance: none;
-				margin: 0;
-			}
+		<div id="info">
+			<a href="" onclick="location.reload()" style="color: rgb(51, 51, 51);">&#8962; Frammenti di senso
+				&#8617;</a>
+		</div>
+	</section>
 
-			h1 {
-				margin-bottom: 0;
-			}
-
-			sub {
-				color: #828181;
-			}
-
-			section#intro {
-				text-align: center;
-				margin-top: 30vh;
-				display: flex;
-				flex-direction: column;
-				justify-content: center;
-				align-items: center;
-				gap: 20px;
-			}
-
-			section#installation {
-				display: none;
-			}
-
-			#info {
-				color: #212222;
-			}
-
-			footer {
-				position: absolute;
-				bottom: 0;
-				width: 100%;
-				/* padding: 10px 0; */
-				text-align: center;
-				z-index: 1;
-			}
-		</style>
-	</head>
-
-	<body>
-		<section id="intro">
-			<div>
-				<h1>Frammenti di senso</h1>
-				<sub>Un software vivente e l'interazione con il pensiero ossessivo e dissociativo</sub>
-			</div>
-
-			<p>Indossa le cuffie&#x1F3A7 per un'esperienza migliore</p>
-
-			<div>
-				<button id="tprova-btn" class="prova-btn">Tempi di prova</button>
-				<button id="tnormal-btn" class="prova-btn">Tempi normali</button>
-			</div>
-			<div>
-				<label style="display: block;" for="min">
-					Minimo
-					<input id="min" name="min" step=".05" min="0.01" max="2048" type="number"/>
-					minuti per traccia
-				</label>
-				<label style="display: block;" for="max">
-					Massimo
-					<input id="max" name="max" step=".05" min="0.01" max="2048" type="number"/>
-					minuti per traccia
-				</label>
-			</div>
-			<br/>
-			<button id="init-btn">Inizia</button>
-		</section>
-		<section id="installation">
-			<div id="container-3D"></div>
-	
-			<div id="info">
-				<a href="" onclick="location.reload()" style="color: inherit;">&#8962; Frammenti di senso &#8617;</a>
-			</div>
-		</section>
-
-		<footer>
-			<p>Creato da <a href="https://freccialata.github.io/" target="_blank">Gianluca Rubino</a><br/>
-			Tesi NABA Milano 2024/2025<br/>
+	<footer>
+		<p>Creato da <a href="https://freccialata.github.io/" target="_blank">Gianluca Rubino</a><br />
+			Tesi NABA Milano 2024/2025<br />
 			Relatore: Prof. Vincenzo Estremo</p>
-		</footer>
+	</footer>
 
-		<script type="importmap">
+	<script type="importmap">
 			{
 				"imports": {
 					"three": "./modules/three/three.module.js",
@@ -147,8 +77,8 @@
 			}
 		</script>
 
-		<script src="main.js" type="module"></script>
+	<script src="main.js" type="module"></script>
 
-	</body>
+</body>
 
 </html>
