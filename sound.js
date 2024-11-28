@@ -41,10 +41,6 @@ export const startChuck = async () => {
     );
 
     await sleep(1000);
-    closeForTrack[0]();
-    closeForTrack[1]();
-    closeForTrack[2]();
-    await sleep(3000);
 
     // Load ChucK files
     await theChuck.loadFile("./chuck/sample_garin.ck");

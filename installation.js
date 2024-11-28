@@ -14,24 +14,8 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
 import { track1Elem, track2Elem, track3Elem } from './sound.js';
 
-/** @type {MixerAction[]} */
-const mixer_action_s = [];
 
-class MixerAction {
-    /**
-     * 
-     * @param {string} id 
-     * @param {THREE.AnimationMixer} mixer 
-     * @param {THREE.AnimationAction} action 
-     */
-    constructor(id, mixer, action) {
-        this.id = id;
-        this.mixer = mixer;
-        this.action = action;
-        this.halfwayreached = false;
-        this.endreached = false;
-    }
-}
+const mixers = [];
 
 const clock = new THREE.Clock();
 const container = document.getElementById( 'container-3D' );
@@ -85,97 +69,133 @@ export const renderInstallation = () => {
 
     const loader = new GLTFLoader();
     loader.setDRACOLoader( dracoLoader );
-    loader.load( 'model/installation.glb',
-    function ( gltf ) {
+    // loader.load( 'model/installation.glb',
+    // function ( gltf ) {
         /** @type {THREE.Scene} */
-        const model1 = gltf.scene;
-        model1.position.set( 0, 0, 0 );
-        model1.scale.set( 5, 5, 5 );
+        // const model1 = gltf.scene;
+        // model1.position.set( 0, 0, 0 );
+        // model1.scale.set( 5, 5, 5 );
 
-        const arm_3dprinted = model1.children[0].children[3].children[0].children[0].children[0];
-        const mirror_refl_orig = arm_3dprinted.children[1];
-        mirror_refl_orig.removeFromParent();
-        const mirror_back_non_reflective = arm_3dprinted.children[0];
-        mirror_back_non_reflective.layers.set(2);
+        // const arm_3dprinted = model1.children[0].children[3].children[0].children[0].children[0];
+        // const mirror_refl_orig = arm_3dprinted.children[1];
+        // mirror_refl_orig.removeFromParent();
+        // const mirror_back_non_reflective = arm_3dprinted.children[0];
+        // mirror_back_non_reflective.layers.set(2);
 
-        const model2 = model1.clone();
-        const model3 = model1.clone();
+        // const model2 = model1.clone();
+        // const model3 = model1.clone();
         // NB. Clone models before adding reflectors!
-        mirror_back_non_reflective.add(createMirrorAsReflector());
+        // mirror_back_non_reflective.add(createMirrorAsReflector());
 
-        model2.position.set( 0, 0, 2.3 );
-        model2.rotation.set(0, -Math.PI/6, 0);
-        const mirror_back_non_reflective1 = model2.children[0].children[3].children[0].children[0].children[0].children[0];
-        mirror_back_non_reflective1.add(createMirrorAsReflector());
+        // model2.position.set( 0, 0, 2.3 );
+        // model2.rotation.set(0, -Math.PI/6, 0);
+        // const mirror_back_non_reflective1 = model2.children[0].children[3].children[0].children[0].children[0].children[0];
+        // mirror_back_non_reflective1.add(createMirrorAsReflector());
         
-        model3.position.set( 0, 0, -2.3 );
-        model3.rotation.set(0, Math.PI/6, 0);
-        const mirror_back_non_reflective2 = model3.children[0].children[3].children[0].children[0].children[0].children[0];
-        mirror_back_non_reflective2.add(createMirrorAsReflector());
+        // model3.position.set( 0, 0, -2.3 );
+        // model3.rotation.set(0, Math.PI/6, 0);
+        // const mirror_back_non_reflective2 = model3.children[0].children[3].children[0].children[0].children[0].children[0];
+        // mirror_back_non_reflective2.add(createMirrorAsReflector());
 
-        scene.add( model1, model2, model3 );
+        // scene.add( model2 );
+        // scene.add( model1, model2, model3 );
 
         /** @type {THREE.AnimationClip} */
-        const common_animation = gltf.animations[0];
-        assignFuncsOpenClose(track1Elem, model1, common_animation);
-        assignFuncsOpenClose(track2Elem, model2, common_animation);
-        assignFuncsOpenClose(track3Elem, model3, common_animation);
+        // const common_animation = gltf.animations[0];
+        // assignFuncsOpenClose(track1Elem, model1, common_animation);
+        // assignFuncsOpenClose(track2Elem, model2, common_animation);
+        // assignFuncsOpenClose(track3Elem, model3, common_animation);
 
-        let meshCount = 0;
-        scene.traverse(obj3d => {
-            if (obj3d.isMesh) {
-                obj3d.castShadow = true;
-                obj3d.receiveShadow = true;
-                if(obj3d.material.map) obj3d.material.map.anisotropy = 16;
-                obj3d.geometry.normalizeNormals();
-                obj3d.geometry.computeVertexNormals();
-                obj3d.geometry.normalizeNormals();
-                meshCount++;
-            }
-        })
-        console.log("Set shadows and normals to", meshCount, "meshes");
+        // let meshCount = 0;
+        // scene.traverse(obj3d => {
+        //     if (obj3d.isMesh) {
+        //         obj3d.castShadow = true;
+        //         obj3d.receiveShadow = true;
+        //         if(obj3d.material.map) obj3d.material.map.anisotropy = 16;
+        //         obj3d.geometry.normalizeNormals();
+        //         obj3d.geometry.computeVertexNormals();
+        //         obj3d.geometry.normalizeNormals();
+        //         meshCount++;
+        //     }
+        // })
+        // console.log("Set shadows and normals to", meshCount, "meshes");
+    // }, undefined, e => console.error( e )
+    // );
 
-        // Postprocessing
-        composer = new EffectComposer( renderer );
-        composer.addPass( new RenderPass( scene, camera ) );
+    loader.load( 'model/installation.glb',
+        function ( gltf ) {
+            /** @type {THREE.Scene} */
+            const model1 = gltf.scene;
+            model1.scale.set( 5, 5, 5 );
 
-        gtaoPass = new GTAOPass(scene, camera, window.innerWidth, window.innerHeight);
-        gtaoPass.output = GTAOPass.OUTPUT.Default;
-        composer.addPass( gtaoPass );
-        gtaoPass.blendIntensity = 0.63;
-        const aoParameters = {
-            radius: 0.25,
-            distanceExponent: 1.,
-            thickness: 1.,
-            scale: 1.,
-            samples: 16,
-            distanceFallOff: 1.,
-            screenSpaceRadius: false,
-        };
-        const pdParameters = {
-            lumaPhi: 10.,
-            depthPhi: 2.,
-            normalPhi: 3.,
-            radius: 4.,
-            radiusExponent: 1.,
-            rings: 2.,
-            samples: 16,
-        };
-        gtaoPass.updateGtaoMaterial( aoParameters );
-        gtaoPass.updatePdMaterial( pdParameters );
+            createAndAttachMirror(model1);
 
-        const outputPass = new OutputPass();
-		composer.addPass( outputPass );
+            const model2 = model1.clone();
+            model2.position.set( 0, 0, 2.3 );
+            model2.rotation.set(0, -Math.PI/6, 0);
+            createAndAttachMirror(model2);
+            const model3 = model1.clone();
+            model3.position.set( 0, 0, -2.3 );
+            model3.rotation.set(0, Math.PI/6, 0);
+            createAndAttachMirror(model3);
 
-        // initGui(aoParameters, pdParameters);
+            let meshCount = 0;
+            scene.traverse(obj3d => {
+                if (obj3d.isMesh) {
+                    obj3d.castShadow = true;
+                    obj3d.receiveShadow = true;
+                    if(obj3d.material.map) obj3d.material.map.anisotropy = 16;
+                    obj3d.geometry.normalizeNormals();
+                    obj3d.geometry.computeVertexNormals();
+                    obj3d.geometry.normalizeNormals();
+                    meshCount++;
+                }
+            })
+            console.log("Set shadows and normals to", meshCount, "meshes");
 
-        renderer.setAnimationLoop( animate );
+            scene.add(model1, model2, model3);
 
-    }, undefined, function ( e ) {
+            setupMixerAndActionsForModel(track1Elem, model1, gltf.animations);
+            setupMixerAndActionsForModel(track2Elem, model2, gltf.animations);
+            setupMixerAndActionsForModel(track3Elem, model3, gltf.animations);
+        }, undefined, e => console.error(e)
+    );
 
-        console.error( e );
+    // Postprocessing
+    composer = new EffectComposer( renderer );
+    composer.addPass( new RenderPass( scene, camera ) );
 
-    } );
+    gtaoPass = new GTAOPass(scene, camera, window.innerWidth, window.innerHeight);
+    gtaoPass.output = GTAOPass.OUTPUT.Default;
+    composer.addPass( gtaoPass );
+    gtaoPass.blendIntensity = 0.63;
+    const aoParameters = {
+        radius: 0.25,
+        distanceExponent: 1.,
+        thickness: 1.,
+        scale: 1.,
+        samples: 16,
+        distanceFallOff: 1.,
+        screenSpaceRadius: false,
+    };
+    const pdParameters = {
+        lumaPhi: 10.,
+        depthPhi: 2.,
+        normalPhi: 3.,
+        radius: 4.,
+        radiusExponent: 1.,
+        rings: 2.,
+        samples: 16,
+    };
+    gtaoPass.updateGtaoMaterial( aoParameters );
+    gtaoPass.updatePdMaterial( pdParameters );
+
+    const outputPass = new OutputPass();
+    composer.addPass( outputPass );
+
+    // initGui(aoParameters, pdParameters);
+
+    renderer.setAnimationLoop( animate );
 
 }
 
@@ -183,25 +203,8 @@ function animate() {
 
     const delta = clock.getDelta();
 
-    mixer_action_s.forEach(mixer_action => {
-        const mixer = mixer_action.mixer;
-        mixer.update(delta)
-
-        // Gestione dell'apertura e chiusura, permette di riconoscere quando lo specchio è chiuso
-        const action = mixer_action.action;
-        const time = action.time;
-        const duration = action.getClip().duration;
-        if (time >= duration * .55 && time <= duration * .58 && !mixer_action.halfwayreached) {
-            // Specchio chiuso, mette in pausa l'animazione
-            action.paused = true;
-            mixer_action.halfwayreached = true;
-            mixer_action.endreached = false;
-        }
-        if (time >= duration * .98 && !mixer_action.endreached) {
-            // Specchio aperto, reset 'halfwayreached', l'animazione è terminata, ripartirà da un evento di ChucK
-            mixer_action.endreached = true;
-            mixer_action.halfwayreached = false;
-        }
+    mixers.forEach(mixer => {
+        mixer.update(delta);
     });
 
     // stats.update();
@@ -220,22 +223,42 @@ window.onresize = function () {
 
 /**
  * 
- * @returns {Reflector}
+ * @param {THREE.Mesh} model 
  */
-const createMirrorAsReflector = () => {
-    const disc_geo = new THREE.CircleGeometry( .7, 64 );
+const createAndAttachMirror = (model) => {
+    const mirror_non_reflective = model.children[1].children[0].children[0].children[0];
+    mirror_non_reflective.layers.set(2);
+    const mirror_reflective_orig = model.children[1].children[0].children[0].children[0].children[0];
+    const disc_geo = model.children[1].children[0].children[0].children[0].children[0].geometry.clone();
     const aMirror = new Reflector( disc_geo, {
         clipBias: 0.003,
         textureWidth: window.innerWidth * window.devicePixelRatio,
         textureHeight: window.innerHeight * window.devicePixelRatio,
         color: 0xb5b5b5,
     } );
-    aMirror.rotation.set(89.5, 91.1, 0);
-    aMirror.scale.set(.14, .14, .14);
-    aMirror.position.set(0, .02, 0);
     aMirror.camera.layers.enable(1);
-    return aMirror;
+    mirror_reflective_orig.removeFromParent();
+    mirror_non_reflective.add(aMirror);
 }
+
+/**
+ * 
+ * @returns {Reflector}
+ */
+// const createMirrorAsReflector = () => {
+//     const disc_geo = new THREE.CircleGeometry( .7, 64 );
+//     const aMirror = new Reflector( disc_geo, {
+//         clipBias: 0.003,
+//         textureWidth: window.innerWidth * window.devicePixelRatio,
+//         textureHeight: window.innerHeight * window.devicePixelRatio,
+//         color: 0xb5b5b5,
+//     } );
+//     aMirror.rotation.set(89.5, 91.1, 0);
+//     aMirror.scale.set(.14, .14, .14);
+//     aMirror.position.set(0, .02, 0);
+//     aMirror.camera.layers.enable(1);
+//     return aMirror;
+// }
 
 /**
  * 
@@ -244,16 +267,16 @@ const createMirrorAsReflector = () => {
  * @param {number} startTime 
  * @returns {THREE.AnimationAction}
  */
-const createAction = (mixer, animation) => {
-    const action = mixer.clipAction(animation);
-    action.timeScale = 1;            // Velocità normale
-    action.startAt(0);               // Parte da 0 secondi
-    action.time = 0;
-    action.setLoop(THREE.LoopOnce);  // Esegue solo una volta
-    action.clampWhenFinished = true; // Ferma l'animazione quando finisce
-    action.paused = true;            // azione in pausa, viene avviata manualmente
-    return action;
-}
+// const createAction = (mixer, animation) => {
+//     const action = mixer.clipAction(animation);
+//     action.timeScale = 1;            // Velocità normale
+//     action.startAt(0);               // Parte da 0 secondi
+//     action.time = 0;
+//     action.setLoop(THREE.LoopOnce);  // Esegue solo una volta
+//     action.clampWhenFinished = true; // Ferma l'animazione quando finisce
+//     action.paused = true;            // azione in pausa, viene avviata manualmente
+//     return action;
+// }
 
 /**
  * 
@@ -261,25 +284,65 @@ const createAction = (mixer, animation) => {
  * @param {THREE.Object3D} model 
  * @param {THREE.AnimationClip} animation 
  */
-const assignFuncsOpenClose = (trackNElem, model, animation) => {
-    const mixer = new THREE.AnimationMixer( model );
-    const action_open_close = createAction(mixer, animation);
+// const assignFuncsOpenClose = (trackNElem, model, animation) => {
+//     const mixer = new THREE.AnimationMixer( model );
+//     const action_open_close = createAction(mixer, animation);
 
-    mixer_action_s.push(new MixerAction(trackNElem.textContent, mixer, action_open_close));
+//     mixer_action_s.push(new MixerAction(trackNElem.textContent, mixer, action_open_close));
 
-    const closeMirror = async () => {
-        action_open_close.reset();
-        action_open_close.play();
-        // L'animazione si mette in pausa a metà nell'animation loop 'animate()'
-    }
+//     const closeMirror = async () => {
+//         action_open_close.reset();
+//         action_open_close.play();
+//         // L'animazione si mette in pausa a metà nell'animation loop 'animate()'
+//     }
+//     const openMirror = async () => {
+//         // La riapertura si verifica rimettendo in play l'animazione
+//         action_open_close.paused = false;
+//     }
+//     trackNElem.addEventListener("openMirror", openMirror);
+//     trackNElem.addEventListener("closeMirror", closeMirror);
+// }
+
+/**
+ * 
+ * @param {HTMLDivElement} track_n_elem_listener 
+ * @param {THREE.Object3D} model 
+ * @param {THREE.AnimationClip[]} animations 
+ */
+const setupMixerAndActionsForModel = (track_n_elem_listener, model, animations) => {
+    const open_animation = animations[0];
+    const close_animation = animations[1];
+    const mixer = new THREE.AnimationMixer(model);
+    const open_action = mixer.clipAction(open_animation);
+    open_action.setLoop(THREE.LoopOnce);
+    open_action.clampWhenFinished = true;
+    const close_action = mixer.clipAction(close_animation);
+    close_action.setLoop(THREE.LoopOnce);
+    mixers.push(mixer);
+
     const openMirror = async () => {
-        // La riapertura si verifica rimettendo in play l'animazione
-        action_open_close.paused = false;
-    }
-    trackNElem.addEventListener("openMirror", openMirror);
-    trackNElem.addEventListener("closeMirror", closeMirror);
+        close_action.stop();
+        open_action.reset();
+        open_action.play();
+    };
+    const closeMirror = async () => {
+        open_action.stop();
+        close_action.reset();
+        close_action.play();
+    };
+    track_n_elem_listener.addEventListener("openMirror", openMirror);
+    track_n_elem_listener.addEventListener("closeMirror", closeMirror);
 }
 
+/**
+ * 
+ * @param {THREE.ColorRepresentation} color 
+ * @param {number} intensity 
+ * @param {number} x 
+ * @param {number} y 
+ * @param {number} z 
+ * @returns 
+ */
 const createLight = (color, intensity, x, y, z) => {
     const light = new THREE.SpotLight( color, intensity );
     light.castShadow = true;
