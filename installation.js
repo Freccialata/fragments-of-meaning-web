@@ -42,8 +42,7 @@ export const renderInstallation = () => {
     scene.background = new THREE.Color( 0x0a050c );
 
     // Lights
-    scene.add( new THREE.AmbientLight( 0x38144a ) ); // 0x38144a
-    // const mainLight = new THREE.DirectionalLight( 0xffffff, 1 );
+    scene.add( new THREE.AmbientLight( 0x38144a ) );
     const mainLight = createLight(0xeeeeee, 400, 8, 10, 5);
     const secondLight = createLight(0xcacacc, 300, -8, 10, -5);
     secondLight.lookAt(0, 0, .3);
@@ -69,89 +68,25 @@ export const renderInstallation = () => {
 
     const loader = new GLTFLoader();
     loader.setDRACOLoader( dracoLoader );
-    // loader.load( 'model/installation.glb',
-    // function ( gltf ) {
-        /** @type {THREE.Scene} */
-        // const model1 = gltf.scene;
-        // model1.position.set( 0, 0, 0 );
-        // model1.scale.set( 5, 5, 5 );
-
-        // const arm_3dprinted = model1.children[0].children[3].children[0].children[0].children[0];
-        // const mirror_refl_orig = arm_3dprinted.children[1];
-        // mirror_refl_orig.removeFromParent();
-        // const mirror_back_non_reflective = arm_3dprinted.children[0];
-        // mirror_back_non_reflective.layers.set(2);
-
-        // const model2 = model1.clone();
-        // const model3 = model1.clone();
-        // NB. Clone models before adding reflectors!
-        // mirror_back_non_reflective.add(createMirrorAsReflector());
-
-        // model2.position.set( 0, 0, 2.3 );
-        // model2.rotation.set(0, -Math.PI/6, 0);
-        // const mirror_back_non_reflective1 = model2.children[0].children[3].children[0].children[0].children[0].children[0];
-        // mirror_back_non_reflective1.add(createMirrorAsReflector());
-        
-        // model3.position.set( 0, 0, -2.3 );
-        // model3.rotation.set(0, Math.PI/6, 0);
-        // const mirror_back_non_reflective2 = model3.children[0].children[3].children[0].children[0].children[0].children[0];
-        // mirror_back_non_reflective2.add(createMirrorAsReflector());
-
-        // scene.add( model2 );
-        // scene.add( model1, model2, model3 );
-
-        /** @type {THREE.AnimationClip} */
-        // const common_animation = gltf.animations[0];
-        // assignFuncsOpenClose(track1Elem, model1, common_animation);
-        // assignFuncsOpenClose(track2Elem, model2, common_animation);
-        // assignFuncsOpenClose(track3Elem, model3, common_animation);
-
-        // let meshCount = 0;
-        // scene.traverse(obj3d => {
-        //     if (obj3d.isMesh) {
-        //         obj3d.castShadow = true;
-        //         obj3d.receiveShadow = true;
-        //         if(obj3d.material.map) obj3d.material.map.anisotropy = 16;
-        //         obj3d.geometry.normalizeNormals();
-        //         obj3d.geometry.computeVertexNormals();
-        //         obj3d.geometry.normalizeNormals();
-        //         meshCount++;
-        //     }
-        // })
-        // console.log("Set shadows and normals to", meshCount, "meshes");
-    // }, undefined, e => console.error( e )
-    // );
-
     loader.load( 'model/installation.glb',
         function ( gltf ) {
             /** @type {THREE.Scene} */
             const model1 = gltf.scene;
             model1.scale.set( 5, 5, 5 );
-
+            model1.name = "garin";
             createAndAttachMirror(model1);
 
             const model2 = model1.clone();
             model2.position.set( 0, 0, 2.3 );
             model2.rotation.set(0, -Math.PI/6, 0);
-            createAndAttachMirror(model2);
+            model2.name = "flock";
             const model3 = model1.clone();
             model3.position.set( 0, 0, -2.3 );
             model3.rotation.set(0, Math.PI/6, 0);
-            createAndAttachMirror(model3);
-
-            let meshCount = 0;
-            scene.traverse(obj3d => {
-                if (obj3d.isMesh) {
-                    obj3d.castShadow = true;
-                    obj3d.receiveShadow = true;
-                    if(obj3d.material.map) obj3d.material.map.anisotropy = 16;
-                    obj3d.geometry.normalizeNormals();
-                    obj3d.geometry.computeVertexNormals();
-                    obj3d.geometry.normalizeNormals();
-                    meshCount++;
-                }
-            })
-            console.log("Set shadows and normals to", meshCount, "meshes");
+            model3.name = "feedb";
+            // createAndAttachMirror(model2);
+            // the mirror/reflector is cloned with model1 (not the reflector's camera I guess)
+            // createAndAttachMirror(model3);
 
             scene.add(model1, model2, model3);
 
@@ -159,7 +94,7 @@ export const renderInstallation = () => {
             setupMixerAndActionsForModel(track2Elem, model2, gltf.animations);
             setupMixerAndActionsForModel(track3Elem, model3, gltf.animations);
         }, undefined, e => console.error(e)
-    );
+    ); // END gltf load
 
     // Postprocessing
     composer = new EffectComposer( renderer );
@@ -196,8 +131,9 @@ export const renderInstallation = () => {
     // initGui(aoParameters, pdParameters);
 
     renderer.setAnimationLoop( animate );
-
 }
+
+//
 
 function animate() {
 
@@ -221,87 +157,42 @@ window.onresize = function () {
     gtaoPass?.setSize(window.innerWidth, window.innerHeight);
 };
 
+//
+
 /**
  * 
  * @param {THREE.Mesh} model 
  */
 const createAndAttachMirror = (model) => {
-    const mirror_non_reflective = model.children[1].children[0].children[0].children[0];
+    const mirror_non_reflective = model.getObjectByName('mirror');
+    if (!mirror_non_reflective) {
+        console.error('Could not find mirror (non-reflective part aswell)');
+        return;
+    }
+    const mirror_reflective_orig = model.getObjectByName('mirror_reflective');
+    if (!mirror_reflective_orig) {
+        console.error('Could not find original reflective mirror');
+        return;
+    }
+
     mirror_non_reflective.layers.set(2);
-    const mirror_reflective_orig = model.children[1].children[0].children[0].children[0].children[0];
-    const disc_geo = model.children[1].children[0].children[0].children[0].children[0].geometry.clone();
+    mirror_reflective_orig.removeFromParent();
+    const disc_geo = mirror_reflective_orig.geometry.clone();
+    // const disc_geo = new THREE.CircleGeometry(0.57, 64);
     const aMirror = new Reflector( disc_geo, {
         clipBias: 0.003,
         textureWidth: window.innerWidth * window.devicePixelRatio,
         textureHeight: window.innerHeight * window.devicePixelRatio,
-        color: 0xb5b5b5,
+        color: 0xc1cbcb,
     } );
+    // aMirror.rotation.set(80, 90, 0);
+    // aMirror.scale.set(0.14, 0.14, 0.14);
+    // aMirror.position.set(-.03, 0, 0);
+    aMirror.layers.set(2);
     aMirror.camera.layers.enable(1);
-    mirror_reflective_orig.removeFromParent();
+    // scene.add(aMirror);
     mirror_non_reflective.add(aMirror);
 }
-
-/**
- * 
- * @returns {Reflector}
- */
-// const createMirrorAsReflector = () => {
-//     const disc_geo = new THREE.CircleGeometry( .7, 64 );
-//     const aMirror = new Reflector( disc_geo, {
-//         clipBias: 0.003,
-//         textureWidth: window.innerWidth * window.devicePixelRatio,
-//         textureHeight: window.innerHeight * window.devicePixelRatio,
-//         color: 0xb5b5b5,
-//     } );
-//     aMirror.rotation.set(89.5, 91.1, 0);
-//     aMirror.scale.set(.14, .14, .14);
-//     aMirror.position.set(0, .02, 0);
-//     aMirror.camera.layers.enable(1);
-//     return aMirror;
-// }
-
-/**
- * 
- * @param {THREE.AnimationMixer} mixer 
- * @param {THREE.AnimationClip} animation 
- * @param {number} startTime 
- * @returns {THREE.AnimationAction}
- */
-// const createAction = (mixer, animation) => {
-//     const action = mixer.clipAction(animation);
-//     action.timeScale = 1;            // Velocità normale
-//     action.startAt(0);               // Parte da 0 secondi
-//     action.time = 0;
-//     action.setLoop(THREE.LoopOnce);  // Esegue solo una volta
-//     action.clampWhenFinished = true; // Ferma l'animazione quando finisce
-//     action.paused = true;            // azione in pausa, viene avviata manualmente
-//     return action;
-// }
-
-/**
- * 
- * @param {HTMLDivElement} trackNElem 
- * @param {THREE.Object3D} model 
- * @param {THREE.AnimationClip} animation 
- */
-// const assignFuncsOpenClose = (trackNElem, model, animation) => {
-//     const mixer = new THREE.AnimationMixer( model );
-//     const action_open_close = createAction(mixer, animation);
-
-//     mixer_action_s.push(new MixerAction(trackNElem.textContent, mixer, action_open_close));
-
-//     const closeMirror = async () => {
-//         action_open_close.reset();
-//         action_open_close.play();
-//         // L'animazione si mette in pausa a metà nell'animation loop 'animate()'
-//     }
-//     const openMirror = async () => {
-//         // La riapertura si verifica rimettendo in play l'animazione
-//         action_open_close.paused = false;
-//     }
-//     trackNElem.addEventListener("openMirror", openMirror);
-//     trackNElem.addEventListener("closeMirror", closeMirror);
-// }
 
 /**
  * 
