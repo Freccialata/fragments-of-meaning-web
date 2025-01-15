@@ -169,6 +169,15 @@ input[type=checkbox]#load3d {
 	}
 }
 
+#swap-lang {
+	position: absolute;
+	border-radius: 50px;
+	/* width: initial; */
+	padding: 14px 11px;
+	top: 4%;
+	left: 4%;
+}
+
 #overlay {
 	position: absolute;
 	font-size: 16px;

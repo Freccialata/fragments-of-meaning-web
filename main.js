@@ -1,5 +1,6 @@
 import { renderInstallation } from './installation.js';
-import { startChuck, g_durs } from './sound.js'
+import { startChuck, g_durs } from './sound.js';
+import { change_language_chain } from './languages.js';
 
 let load3d = true;
 
@@ -13,6 +14,10 @@ document.querySelector("#init-btn").addEventListener("click", e => {
     installSection.style = "display: initial;"
     footer.innerHTML = "";
     footer.style = "display: none;";
+});
+
+document.querySelector("#swap-lang").addEventListener("click", e => {
+    change_language_chain();
 });
 
 // Track duration selection
